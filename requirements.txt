@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+httpx
+requests
+pydantic
+SQLAlchemy
+alembic
+python-dotenv
+APScheduler
+cryptography
+itsdangerous
+python-dateutil
+PyJWT
+python-multipart
+aiofiles
+redis
