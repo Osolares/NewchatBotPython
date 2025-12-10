@@ -74,5 +74,36 @@ class UserState(Base):
     data = Column(JSON, nullable=True)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow)
 
+# models/orm.py  <-- agregar estas clases después de Holiday (o al final del archivo)
+from sqlalchemy import Time, Date, Text
+
+class BusinessHours(Base):
+    """
+    Horario semanal por defecto.
+    Cada fila representa un día de la semana (0=Monday .. 6=Sunday)
+    con hora de apertura y cierre en formato HH:MM:SS stored as Time.
+    """
+    __tablename__ = "business_hours"
+    id = Column(Integer, primary_key=True, index=True)
+    weekday = Column(Integer, index=True)      # 0..6 (Mon..Sun)
+    open_time = Column(Time, nullable=False)
+    close_time = Column(Time, nullable=False)
+    active = Column(Boolean, default=True)
+
+class SpecialHours(Base):
+    """
+    Excepciones: días con horario especial (p.ej. festivos con horario reducido)
+    date: ISO string YYYY-MM-DD
+    start_time / end_time optional; if both null -> closed all day.
+    """
+    __tablename__ = "special_hours"
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(String, index=True)          # 'YYYY-MM-DD'
+    open_time = Column(Time, nullable=True)
+    close_time = Column(Time, nullable=True)
+    note = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+
+
 def init_db():
     Base.metadata.create_all(bind=engine)

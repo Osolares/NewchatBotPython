@@ -7,6 +7,8 @@ from utils.timeutils import is_open_now
 from models.orm import SessionLocal, Template
 
 import re
+# al inicio del archivo, agregar
+from advanced.time_rules import is_open_now, schedule_message_at_next_open
 
 lang = LangGraphService()
 wc = WooCommerceService()
@@ -33,12 +35,33 @@ def process_message(platform, platform_id, text, user_meta=None):
 
     s = state_mgr.get_state(platform, platform_id)
 
+
+# ... dentro de process_message(...)
+    # 2. fuera de horario?
     if not is_open_now():
         tpl = get_template("out_of_hours", platform=platform)
-        if tpl:
-            name = (user_meta.get('first_name') if isinstance(user_meta, dict) else '')
-            return tpl.body.format(name=name)
-        return "Gracias por escribirnos. Nuestro horario de atención es L-V 08:00-18:00. Te responderemos en el próximo horario."
+        name = (user_meta.get('first_name') if isinstance(user_meta, dict) else '')
+        reply_text = tpl.body.format(name=name) if tpl else "Gracias por escribirnos. Nuestro horario es L-V 08:00-18:00. Te responderemos en el próximo horario."
+
+        # Opcional: encolar un recordatorio para enviar al abrir
+        # Solo encolamos si no existe un ScheduledMessage similar (evitamos duplicados)
+        try:
+            # build follow-up text (puedes personalizar)
+            follow_up_tpl = get_template("followup_on_open", platform=platform)
+            follow_text = follow_up_tpl.body.format(name=name) if follow_up_tpl else f"Hola {name}, te escribimos en horario de atención. ¿En qué puedo ayudarte?"
+            schedule_message_at_next_open(platform, platform_id, follow_text)
+        except Exception as e:
+            logger.warning(f"Could not schedule follow-up: {e}")
+
+        return reply_text
+
+
+    #if not is_open_now():
+    #    tpl = get_template("out_of_hours", platform=platform)
+    #    if tpl:
+    #        name = (user_meta.get('first_name') if isinstance(user_meta, dict) else '')
+    #        return tpl.body.format(name=name)
+    #    return "Gracias por escribirnos. Nuestro horario de atención es L-V 08:00-18:00. Te responderemos en el próximo horario."
 
     if s.current_flow == "vehicle_search":
         return vs_handle(platform, platform_id, t)

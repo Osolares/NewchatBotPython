@@ -3,6 +3,10 @@ from pydantic import BaseModel
 from config import settings
 from models.orm import SessionLocal, Template, Holiday
 
+from pydantic import BaseModel
+from models.orm import BusinessHours, SpecialHours
+from datetime import time
+
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 class TemplateIn(BaseModel):
@@ -68,3 +72,55 @@ def add_holiday(payload: dict):
     db.refresh(h)
     db.close()
     return {"ok": True, "id": h.id}
+
+class BusinessHoursIn(BaseModel):
+    weekday: int  # 0..6
+    open_time: str  # "08:00"
+    close_time: str # "18:00"
+    active: bool = True
+
+class SpecialHoursIn(BaseModel):
+    date: str  # "YYYY-MM-DD"
+    open_time: str | None = None
+    close_time: str | None = None
+    note: str | None = None
+    active: bool = True
+
+# Business hours CRUD
+@router.post("/business_hours", dependencies=[Depends(admin_guard)])
+def create_business_hours(payload: BusinessHoursIn):
+    db = SessionLocal()
+    ot = datetime.strptime(payload.open_time, "%H:%M").time()
+    ct = datetime.strptime(payload.close_time, "%H:%M").time()
+    row = BusinessHours(weekday=payload.weekday, open_time=ot, close_time=ct, active=payload.active)
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    db.close()
+    return {"ok": True, "id": row.id}
+
+@router.get("/business_hours", dependencies=[Depends(admin_guard)])
+def list_business_hours():
+    db = SessionLocal()
+    rows = db.query(BusinessHours).all()
+    db.close()
+    return rows
+
+@router.post("/special_hours", dependencies=[Depends(admin_guard)])
+def create_special_hours(payload: SpecialHoursIn):
+    db = SessionLocal()
+    ot = datetime.strptime(payload.open_time, "%H:%M").time() if payload.open_time else None
+    ct = datetime.strptime(payload.close_time, "%H:%M").time() if payload.close_time else None
+    row = SpecialHours(date=payload.date, open_time=ot, close_time=ct, note=payload.note, active=payload.active)
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    db.close()
+    return {"ok": True, "id": row.id}
+
+@router.get("/special_hours", dependencies=[Depends(admin_guard)])
+def list_special_hours():
+    db = SessionLocal()
+    rows = db.query(SpecialHours).all()
+    db.close()
+    return rows
