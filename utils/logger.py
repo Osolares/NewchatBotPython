@@ -1,4 +1,3 @@
-# utils/logger.py
 import logging
 logger = logging.getLogger("multibot")
 handler = logging.StreamHandler()

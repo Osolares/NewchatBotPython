@@ -1,0 +1,36 @@
+multibot/
+├─ app.py
+├─ config.py
+├─ requirements.txt
+├─ .gitignore
+├─ Dockerfile (opcional)
+├─ .env.example
+├─ adapters/
+│ ├─ __init__.py
+│ ├─ telegram_adapter.py
+│ └─ whatsapp_adapter.py
+├─ bot/
+│ ├─ __init__.py
+│ ├─ processor.py
+│ ├─ state_manager.py
+│ ├─ handlers.py
+│ └─ flows/vehicle_search.py
+├─ services/
+│ ├─ __init__.py
+│ ├─ woocommerce_service.py
+│ └─ langgraph_service.py
+├─ models/
+│ ├─ __init__.py
+│ └─ orm.py
+├─ utils/
+│ ├─ __init__.py
+│ ├─ security.py
+│ ├─ logger.py
+│ ├─ rate_limiter.py
+│ └─ timeutils.py
+├─ admin_router.py
+├─ scripts/
+│ ├─ init_db.py
+│ └─ scheduler.py
+└─ data/
+└─ holidays.json

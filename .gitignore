@@ -3,29 +3,25 @@ __pycache__/
 *.pyc
 *.pyo
 
+
 # Environments
 .env
 .env.*
 venv/
 .venv/
 
+
 # Byte-compiled / cache
 *.log
 *.sqlite3
 *.db
 
-# Alembic
-alembic/versions/*.py
 
 # Editor / IDE
 .vscode/
 .idea/
 
+
 # OS
 .DS_Store
 Thumbs.db
-
-# Render build
-*.tar.gz
-build/
-dist/
