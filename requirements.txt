@@ -12,4 +12,4 @@ redis
 cryptography
 python-multipart
 aiofiles
-pytz   <-- agregar este
+pytz
