@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+httpx
+requests
+pydantic
+pydantic-settings
+SQLAlchemy
+python-dotenv
+APScheduler
+python-dateutil
+redis
+cryptography
+python-multipart
+aiofiles
