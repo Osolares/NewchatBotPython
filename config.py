@@ -1,7 +1,6 @@
-# config.py
-from pydantic import BaseSettings, AnyHttpUrl
+from pydantic_settings import BaseSettings
+from pydantic import AnyHttpUrl
 from typing import Optional
-import os
 
 class Settings(BaseSettings):
     ENV: str = "development"
